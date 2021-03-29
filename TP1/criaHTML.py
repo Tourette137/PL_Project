@@ -13,10 +13,10 @@ def criaHTMLPages(categoria, elementos):
     <body>
         <h1>{categoria}</h1>
         <h3><a href=\"../index.html\"> <b>Voltar á Página Inicial</b></a></h3>
-        <h2>Elementos da Categoria {categoria} ({elementos['nrElementos']} elementos):</h2>''')
+        <h2>Elementos da Categoria {categoria} ({elementos['nrElementos']} elementos -> {len(elementos['elementos'])} distintos):</h2>''')
 
-        for (elemento,nrLinha) in elementos['elementos']:
-            ficheiro.write(f'''\n\t\t<p><b>{elemento}</b> - Linha {nrLinha}</p>''')
+        for (elemento,linhas) in elementos['elementos'].items():
+            ficheiro.write(f'''\n\t\t<p><b>{elemento}</b> - Linhas {linhas}</p>''')
 
         ficheiro.write(f'''
     </body>
