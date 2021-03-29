@@ -1,5 +1,3 @@
-import re
-
 def criaHTMLPages(categoria, elementos):
     
     pathFicheiro = 'pages/'+categoria.lower()+'.html'
