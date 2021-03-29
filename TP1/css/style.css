@@ -1,0 +1,119 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #fff; /*#ff6600*/
+}
+
+.marca{
+    font-size: 20px;
+}
+
+.showcase{
+    background:url(../images/computador.jpg) no-repeat;
+    background-position: center;
+    height: 600px;
+    padding: 140px 100px;
+    color: #fff;
+}
+
+.showcase h1{
+    font-size: 40px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.showcase h2{
+    font-size: 30px;
+    font-weight: 450;
+    text-transform: uppercase;
+}
+
+.showcase hr{
+    width: 100px;
+    margin: auto;
+    border-width: 3px;
+    border-color: #ff6600;
+}
+
+.showcase p{
+    font-size: 16px;
+    padding-bottom: 20px;
+}
+
+.listagemCategorias {
+    font-family: sans-serif;
+    margin-top: 50px;
+}
+
+.listagemCategorias {
+    font-family: sans-serif;
+    margin-top: 50px;
+}
+
+.listagemCategorias hr{
+    margin: 0;
+}
+
+.listagemCategorias h2{
+    font-size: 35px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.listagemCategorias h3{
+    font-size: 25px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.listagemCategorias ul{
+    position: center;
+    width: 75%;
+    margin: 50px auto 0;
+    margin-bottom: 75px;
+    padding: 10px 10px;
+    box-sizing: border-box;
+}
+
+.listagemCategorias ul li{
+    background: rgba(255, 255, 255, .05);
+    padding: 10px 20px;
+    color: #000;
+}
+
+.categoria{
+    font-size: 30px;
+}
+
+.nrElementos{
+    font-size: 30px;
+}
+
+.borda{
+    margin-bottom: 1px solid;
+    color: #fff;
+}
+
+.showcaseElementos{
+    background-position: center;
+    height: 300px;
+    padding: 140px 100px;
+    color: #000;
+}
+
+.showcaseElementos h1{
+    font-size: 40px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.showcaseElementos h2{
+    font-size: 30px;
+    font-weight: 450;
+    text-transform: uppercase;
+}
+
+.showcaseElementos hr{
+    width: 100px;
+    margin: auto;
+    border-width: 3px;
+    border-color: #ff6600;
+}

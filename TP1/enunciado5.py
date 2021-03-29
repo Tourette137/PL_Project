@@ -22,7 +22,7 @@ categoriaAtual = ""
 linhaElemento = 0
 
 
-file = open("train.txt",'r')
+file = open("train.txt",'r', encoding="utf-8")
 
 startData = time.time()
 
