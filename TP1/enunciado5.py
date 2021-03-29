@@ -6,9 +6,10 @@ from criaHTML import criaHTML
 nrLinha = 1
 resultadosCategorias = {}
 
-start = time.time()
 
 file = open("train.txt",'r')
+
+startData = time.time()
 
 for linha in file:
 
@@ -24,10 +25,20 @@ for linha in file:
         resultadosCategorias[campos.group(1)]['nrElementos'] += 1
         resultadosCategorias[campos.group(1)]['elementos'].append((campos.group(2),nrLinha))
     
+    else:
+        pass
+    
     nrLinha += 1
 
-end = time.time()
 
-print(end-start)
+
+endData = time.time()
+print(endData-startData," seconds to get necessary data.")
+
+
+startHTML = time.time()
 
 criaHTML(resultadosCategorias)
+
+endHTML = time.time()
+print(endHTML-startHTML," seconds to create HTML's.")
