@@ -1,5 +1,5 @@
 def criaHTMLPages(categoria, elementos):
-    
+
     pathFicheiro = 'pages/'+categoria.lower()+'.html'
     nrElementos = len(elementos['elementos'])
     elementoNr = 1
@@ -20,7 +20,7 @@ def criaHTMLPages(categoria, elementos):
         <div class="w3-bar w3-black w3-top">
             <span class="marca w3-bar-item w3-mobile">Processamento de Linguagens <b>(Grupo 59)</b></span>
             <span class="w3-right w3-mobile">
-                <a href="../index.html" class="marca w3-bar-item w3-button w3-mobile w3-hover-orange">Voltar á Página Inicial</a>
+                <a href="../index.html" class="marca w3-bar-item w3-button w3-mobile w3-hover-orange">Voltar à Página Inicial</a>
             </span>
         </div>
 
@@ -40,7 +40,7 @@ def criaHTMLPages(categoria, elementos):
 
         for (elemento,linhas) in elementos['elementos'].items():
             ficheiro.write(f'''
-                <button onclick="myFunction('{elemento}')" class="w3-button w3-block w3-left-align w3-hover-deep-orange"> 
+                <button onclick="myFunction('{elemento}')" class="w3-button w3-block w3-left-align w3-hover-deep-orange">
                     <span class="topografia w3-mobile"><b>{elemento}</b></span>
                     <span class="topografia w3-right w3-mobile">{len(linhas)} Ocorrências</span>
                 </button>
@@ -94,7 +94,7 @@ def criaHTML(resultadosCategorias):
         <title>Trabalho TP1 PL - Enunciado 5</title>
     </head>
     <body>
-        
+
         <div class="w3-bar w3-black w3-top">
             <span class="marca w3-bar-item w3-mobile">Processamento de Linguagens <b>(Grupo 59)</b></span>
         </div>
@@ -104,8 +104,8 @@ def criaHTML(resultadosCategorias):
                 <h1 class="w3-text-shadow w3-animate-zoom">Trabalho TP1 PL - Enunciado 5</h1>
                 <h2 class="w3-text-shadow w3-animate-zoom">Grupo 59</h2>
                 <hr class="w3-animate-zoom">
-                <p class="w3-animate-zoom wr-center">Hoje em dia, a área de Machine Learning está na moda e as suas metodologias e 
-                tecnologias são usadas em muitas áreas. A maior parte dos algoritmos de Machine Learning têm de ser treinados com um 
+                <p class="w3-animate-zoom wr-center">Hoje em dia, a área de Machine Learning está na moda e as suas metodologias e
+                tecnologias são usadas em muitas áreas. A maior parte dos algoritmos de Machine Learning têm de ser treinados com um
                 dataset especialmente anotado à mão e depois testados sobre outro dataset anotado para ver se o que a máquina
                 descobre é o mesmo que um ser humano faria à mão.</p>
                 <p class="w3-animate-zoom wr-center">Neste problema, programamos a extração de várias categorias e
