@@ -1,3 +1,4 @@
+#Função que cria o HTML das páginas relativas a uma categoria em específico (por exemplo ACTOR ou TRAILER)
 def criaHTMLPages(categoria, elementos):
 
     pathFicheiro = 'pages/'+categoria.lower()+'.html'
@@ -75,7 +76,7 @@ def criaHTMLPages(categoria, elementos):
 </html>
 ''')
 
-
+#Função que cria o HTML da página principal do Projeto onde podemos aceder às várias outras categorias
 def criaHTML(resultadosCategorias):
 
     nrCategorias = len(resultadosCategorias)
