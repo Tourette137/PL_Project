@@ -51,3 +51,26 @@ def operation(op):
         f.write("\tdiv\n")
     f.close
 
+def read():
+    f = open(file_name, "a")
+    f.write("\tread\n")
+    f.write("\tatoi\n")
+    f.close
+
+def write_num(number):
+    f = open(file_name, "a")
+    f.write("\tpushi " + str(number) + "\n")
+    f.write("\twritei\n")
+    f.close
+
+def write_var(offset):
+    f = open(file_name, "a")
+    f.write("\tpushg " + str(offset) + "\n")
+    f.write("\twritei\n")
+    f.close
+
+def write_str(string):
+    f = open(file_name, "a")
+    f.write("\tpushs " + string + "\n")
+    f.write("\twrites\n")
+    f.close

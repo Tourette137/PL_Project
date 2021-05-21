@@ -51,11 +51,11 @@ def p_EndInstrs(p):
     "EndInstrs : END_INSTRS"
     printer.end_instrs()
 
-def p_Instrs1(p):
-    "Instrs : Instrs Instr"
-
-def p_Instrs2(p):
-    "Instrs : "
+def p_Instrs(p):
+    """
+    Instrs : Instrs Instr
+           | 
+    """
 
 def p_Instr_Atrib(p):
     "Instr : VAR '=' Exp ';'"
@@ -68,6 +68,26 @@ def p_Instr_Atrib(p):
     else:
         print(name, ": Variável não declarada!")
         p.parser.success = False
+
+def p_Instr_PrintNum(p):
+    "Instr : WRITE '(' NUM ')' ';'"
+    printer.write_num(p[3])
+
+def p_Instr_PrintVar(p):
+    "Instr : WRITE '(' VAR ')' ';'"
+
+    name = p[3]
+
+    if name in p.parser.identifier_table:
+        offset = p.parser.identifier_table[name][1]
+        printer.write_var(offset)
+    else:
+        print(name, ": Variável não declarada!")
+        p.parser.success = False
+
+def p_Instr_PrintStr(p):
+    "Instr : WRITE '(' STR ')' ';'"
+    printer.write_str(p[3])
 
 def p_ExpVar(p):
     "Exp : VAR"
@@ -113,6 +133,9 @@ def p_ExpNumNum(p):
     printer.pushNum(p[3])
     printer.operation(p[2])
 
+def p_ExpRead(p):
+    "Exp : READ"
+    printer.read()
 
 def p_error(p):
     print(f'Syntax Error: {p}')
