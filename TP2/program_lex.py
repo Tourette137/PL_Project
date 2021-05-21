@@ -1,15 +1,7 @@
 import ply.lex as lex
-
-tokens = ['INT', 'VAR', 'NUM', 'BEGIN_INSTRS', 'END_INSTRS']
+import sys
+tokens = ['INT', 'VAR', 'NUM', 'BEGIN_INSTRS', 'END_INSTRS', 'OP']
 literals = [',', '=', ';', '+', '-', '*', '/', '(', ')', '{', '}']
-
-def t_BEGIN_INSTRS(t):
-    r'BEGIN'
-    return t
-
-def t_END_INSTRS(t):
-    r'END\.'
-    return t
 
 def t_INT(t):
     r'INT'
@@ -21,6 +13,18 @@ def t_NUM(t):
 
 def t_VAR(t):
     r'[a-z]+'
+    return t
+
+def t_BEGIN_INSTRS(t):
+    r'BEGIN'
+    return t
+
+def t_END_INSTRS(t):
+    r'END\.'
+    return t
+
+def t_OP(t):
+    r'[\+\-\*/]'
     return t
 
 t_ignore = '\n\t '

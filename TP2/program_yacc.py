@@ -5,8 +5,12 @@ import sys
 
 # Production rules
 def p_Program(p):
-    "Program : Decls BeginInstrs Instrs EndInstrs"
-    pass
+    """
+    Program : Decls
+            | BeginInstrs
+            | Instrs
+            | EndInstrs
+    """
 
 # Declaration block
 def p_Decls1(p):
@@ -29,13 +33,13 @@ def p_IntVar(p):
     
     name = p[1]
 
-    if (name in p.parser.identifier_table):
+    if name in p.parser.identifier_table:
         print(name, ": Variável já existente!")
-        parser.success = False
+        p.parser.success = False
     else:
         p.parser.identifier_table[name] = ['int', p.parser.var_offset, 1]
         p.parser.var_offset += 1
-        printer.var('0')
+        printer.varDecl(0)
 
 
 # Instructions block
@@ -57,54 +61,57 @@ def p_Instr_Atrib(p):
     "Instr : VAR '=' Exp ';'"
     
     name = p[1]
-    value = p[3]
 
-    if (name in p.parser.identifier_table):
+    if name in p.parser.identifier_table:
         offset = p.parser.identifier_table[name][1]
-        printer.atrib(offset, value)
+        printer.atrib(offset)
     else:
         print(name, ": Variável não declarada!")
-        parser.success = False
+        p.parser.success = False
 
-def p_Exp_Termo_add(p):
-    "Exp : Exp '+' Termo"
-    p[0] = p[1] + p[3]
-
-def p_Exp_Termo_sub(p):
-    "Exp : Exp '-' Termo"
-    p[0] = p[1] - p[3]
-
-def p_Exp_Termo(p):
-    "Exp : Termo"
-    p[0] = p[1]
-
-def p_Termo_Fator_mul(p):
-    "Termo : Termo '*' Fator"
-    p[0] = p[1] * p[3]
-
-def p_Termo_Fator_div(p):
-    "Termo : Termo '/' Fator"
-    if (p[3] != 0):
-        p[0] = p[1] / p[3]
+def p_ExpVar(p):
+    "Exp : VAR"
+    if p[1] not in p.parser.identifier_table:
+        print(p[1], ": Variável não declarada!")
+        p.parser.success = False
     else:
-        print('O was found as a factor, continuing with 0.')
-        p[0] = 0
+        printer.pushVar(p[1])
 
-def p_Termo_Fator(p):
-    "Termo : Fator"
-    p[0] = p[1]
+def p_ExpNum(p):
+    "Exp : NUM"
+    printer.pushNum(p[1])
 
-def p_Fator_id(p):
-    "Fator : VAR"
-    p[0] = 1
+def p_ExpVarVar(p):
+    "Exp : VAR OP VAR"
+    var1 = p[1]
+    var2 = p[3]
+    if var1 not in p.parser.identifier_table:
+        print(var1, ": Variável não declarada!")
+        p.parser.success = False
+    elif var2 not in p.parser.identifier_table:
+        print(var2, ": Variável não declarada!")
+        p.parser.success = False
+    else:
+        printer.pushVar(p.parser.identifier_table[var1][1])
+        printer.pushVar(p.parser.identifier_table[var2][1])
+        printer.operation(p[2])
 
-def p_Fator_num(p):
-    "Fator : NUM"
-    p[0] = int(p[1])
+def p_ExpVarNum(p):
+    "Exp : VAR OP NUM"
+    var = p[1]
+    if var not in p.parser.identifier_table:
+        print(var, ": Variável não declarada!")
+        p.parser.success = False
+    else:
+        printer.pushVar(p.parser.identifier_table[var][1])
+        printer.pushNum(p[3])
+        printer.operation(p[2])
 
-def p_Fator_Exp(p):
-    "Fator : '(' Exp ')'"
-    p[0] = p[1]
+def p_ExpNumNum(p):
+    "Exp : NUM OP NUM"
+    printer.pushNum(p[1])
+    printer.pushNum(p[3])
+    printer.operation(p[2])
 
 
 def p_error(p):
@@ -131,7 +138,9 @@ for linha in sys.stdin:
     result = parser.parse(linha)
     # print(result)
     if parser.success == False:
+        printer.clean()
         break
+
 
 print(parser.identifier_table)
 print(parser.var_offset)

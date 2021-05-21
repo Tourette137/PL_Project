@@ -2,4 +2,8 @@ INT x, y, z;
 
 BEGIN
 
+x = 10;
+y = 5;
+z = x * y;
+
 END.
