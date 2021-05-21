@@ -76,52 +76,78 @@ def p_Instrs2(p):
     p[0] = ""
 
 def p_Instr_IfStat(p):
-    "Instr : IF '(' Cond ')' '{' Instrs '}'"
+    "Instr : IF '(' Conds ')' '{' Instrs '}'"
 
     p[0] = p[3]
-    p[0] += "\tjz end_if_" + str(p.parser.if_count) + "\n"
+    p[0] += "\tjz endif" + str(p.parser.if_count) + "\n"
 
     p[0] += p[6]
-    p[0] += "end_if_" + str(p.parser.if_count) + ":\n"
+    p[0] += "endif" + str(p.parser.if_count) + ":\n"
 
     p.parser.if_count += 1
 
 def p_Instr_IfElseStat(p):
-    "Instr : IF '(' Cond ')' '{' Instrs '}' ELSE '{' Instrs '}'"
+    "Instr : IF '(' Conds ')' '{' Instrs '}' ELSE '{' Instrs '}'"
 
     count = str(parser.if_count)
 
     p[0] = p[3]
-    p[0] += "\tjz else_if_" + count + "\n"
+    p[0] += "\tjz elseif" + count + "\n"
 
     p[0] += p[6]
-    p[0] += "\tjump end_if_" + count + "\n"
-    p[0] += "else_if_" + count + ":\n"
+    p[0] += "\tjump endif" + count + "\n"
+    p[0] += "elseif" + count + ":\n"
 
     p[0] += p[10]
-    p[0] += "end_if_" + count + ":\n"
+    p[0] += "endif" + count + ":\n"
 
     p.parser.if_count += 1
 
 
 def p_Instr_ForStat(p):
-    "Instr : FOR '(' Atribs ';' Cond ';' Atribs ')' '{' Instrs '}'"
+    "Instr : FOR '(' Atribs ';' Conds ';' Atribs ')' '{' Instrs '}'"
 
     count = str(parser.for_count)
 
     p[0] =  p[3]
-    p[0] += "jump for_cond_check_" + count + "\n"
-    p[0] += "for_statement_" + count + ":\n"
+    p[0] += "jump forcond" + count + "\n"
+    p[0] += "forstat" + count + ":\n"
 
     p[0] += p[10]
     p[0] += p[7]
-    p[0] += "for_cond_check_" + count + ":\n"
+    p[0] += "forcond" + count + ":\n"
     p[0] += p[5]
     p[0] += "\tnot\n"
-    p[0] += "\tjz for_statement_" + count + "\n"
+    p[0] += "\tjz forstat" + count + "\n"
 
     p.parser.for_count += 1
 
+def p_Conds1(p):
+    "Conds : Conds OPLOGIC Condz"
+
+    p[0] = p[1]
+    p[0] += p[3]
+
+    if p[2] == 'AND':
+        p[0] += "\tadd\n"
+        p[0] += "\tpushi 2\n"
+        p[0] += "\tequal\n"
+    else:
+        p[0] += "\tadd\n"
+        p[0] += "\tpushi 0\n"
+        p[0] += "\tsup\n"
+
+def p_Conds2(p):
+    "Conds : Condz"
+    p[0] = p[1]
+
+def p_Condz1(p):
+    "Condz : '(' Conds ')'"
+    p[0] = p[2]
+
+def p_Condz2(p):
+    "Condz : Cond"
+    p[0] = p[1]
 
 def p_Cond(p):
     "Cond : Exp OPCOMP Exp"
@@ -279,6 +305,6 @@ if not parser.success:
     os.remove(file_name)
 
 
-print(parser.identifier_table)
-print(parser.var_offset)
-print(parser.if_count)
+#print(parser.identifier_table)
+#print(parser.var_offset)
+#print(parser.if_count)
