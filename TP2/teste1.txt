@@ -1,0 +1,24 @@
+INT a, b, c, d;
+
+BEGIN
+
+write("Insira o primeiro número: ");
+a = read();
+
+write("Insira o segundo número: ");
+b = read();
+
+write("Insira o terceiro número: ");
+c = read();
+
+write("Insira o quarto número: ");
+d = read();
+
+if (a == b AND a == c AND a == d) {
+    write("Os valores inseridos podem ser os lados de um quadrado.\n");
+}
+else {
+    write("Os valores inseridos não podem ser os lados de um quadrado.\n");
+}
+
+END.
