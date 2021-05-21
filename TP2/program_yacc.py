@@ -294,11 +294,19 @@ parser.for_count = 0
 # Read input and parse it
 # Line by line
 parser.success = True
-file_name = "output.vm"
+
+if len(sys.argv) > 1:
+    input = open(sys.argv[1], "r")
+    content = input.read()
+    input.close
+
+    file_name = sys.argv[1].split(".", 1)[0] + ".vm"
+else:
+    content = sys.stdin.read()
+    
+    file_name = "output.vm"
+
 f = open(file_name, "w")
-
-
-content = sys.stdin.read()
 parser.parse(content)
 
 if not parser.success:
