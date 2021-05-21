@@ -1,0 +1,5 @@
+INT x, y, z;
+
+BEGIN
+
+END.
