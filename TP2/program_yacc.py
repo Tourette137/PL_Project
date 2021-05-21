@@ -6,23 +6,31 @@ import os
 # Production rules
 def p_Program(p):
     "Program : Decls BeginInstrs Instrs EndInstrs"
+    f.write(p[1])
+    f.write(p[2])
     f.write(p[3])
+    f.write(p[4])
 
 # Declaration block
 def p_Decls1(p):
     "Decls : Decls Decl"
+    p[0] = p[1] + p[2]
 
 def p_Decls2(p):
     "Decls : Decl"
+    p[0] = p[1]
 
 def p_Decl(p):
     "Decl : INT IntVars ';'"
+    p[0] = p[2]
 
 def p_IntVars1(p):
     "IntVars : IntVars ',' IntVar"
+    p[0] = p[1] + p[3]
 
 def p_IntVars2(p):
     "IntVars : IntVar"
+    p[0] = p[1]
 
 def p_IntVar(p):
     "IntVar : VAR"
@@ -35,17 +43,17 @@ def p_IntVar(p):
     else:
         p.parser.identifier_table[name] = ['int', p.parser.var_offset, 1]
         p.parser.var_offset += 1
-        f.write("\tpushi 0\n")
+        p[0] = "\tpushi 0\n"
 
 
 # Instructions block
 def p_BeginInstrs(p):
     "BeginInstrs : BEGIN_INSTRS"
-    f.write("start\n")
+    p[0] = "start\n"
 
 def p_EndInstrs(p):
     "EndInstrs : END_INSTRS"
-    f.write("stop\n")
+    p[0] = "stop\n"
 
 def p_Instrs1(p):
     "Instrs : Instrs Instr"
