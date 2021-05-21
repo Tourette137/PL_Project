@@ -5,12 +5,8 @@ import os
 
 # Production rules
 def p_Program(p):
-    """
-    Program : Decls
-            | BeginInstrs
-            | Instrs
-            | EndInstrs
-    """
+    "Program : Decls BeginInstrs Instrs EndInstrs"
+    f.write(p[3])
 
 # Declaration block
 def p_Decls1(p):
@@ -52,25 +48,21 @@ def p_EndInstrs(p):
     f.write("stop\n")
 
 def p_Instrs1(p):
-    "Instrs : Instrs Instr ';'"
-    f.write(p[1] + p[2])
+    "Instrs : Instrs Instr"
+    p[0] = p[1] + p[2]
 
 def p_Instrs2(p):
-    "Instrs : Instrs IfStat"
-    f.write(p[1] + p[2])
-
-def p_Instrs3(p):
     "Instrs : "
     p[0] = ""
 
-def p_IfStat(p):
-    "IfStat : IF '(' Cond ')' '{' Instrs '}'"
+def p_Instr_IfStat(p):
+    "Instr : IF '(' Cond ')' '{' Instrs '}'"
 
     p[0] = p[3]
     p[0] += "\tjz end_if" + str(p.parser.if_count) + "\n"
 
     p[0] += p[6]
-    p[0] += "end_if" + p.parser.if_count + "\n"
+    p[0] += "end_if" + str(p.parser.if_count) + ":\n"
 
     p.parser.if_count += 1
 
@@ -90,10 +82,9 @@ def p_Cond(p):
         p[0] += "\tinf\n"
     elif p[2] == '<=':
         p[0] += "\tinfeq\n"
-        
 
 def p_Instr_Atrib(p):
-    "Instr : VAR '=' Exp"
+    "Instr : VAR '=' Exp ';'"
     
     name = p[1]
 
@@ -107,12 +98,12 @@ def p_Instr_Atrib(p):
         p.parser.success = False
 
 def p_Instr_PrintNum(p):
-    "Instr : WRITE '(' NUM ')'"
+    "Instr : WRITE '(' NUM ')' ';'"
     p[0] = "\tpushi " + str(p[3]) + "\n"
     p[0] += "\twritei\n"
 
 def p_Instr_PrintVar(p):
-    "Instr : WRITE '(' VAR ')'"
+    "Instr : WRITE '(' VAR ')' ';'"
 
     name = p[3]
 
@@ -125,51 +116,40 @@ def p_Instr_PrintVar(p):
         p.parser.success = False
 
 def p_Instr_PrintStr(p):
-    "Instr : WRITE '(' STR ')'"
+    "Instr : WRITE '(' STR ')' ';'"
     p[0] = "\tpushs " + p[3] + "\n"
     p[0] += "\twrites\n"
 
-def p_ExpVar(p):
-    "Exp : VAR"
-    if p[1] not in p.parser.identifier_table:
-        print(p[1], ": Variável não declarada!")
-        p.parser.success = False
+def p_Exp_Termo_add(p):
+    "Exp : Exp '+' Termo"
+    p[0] = p[1] + p[3] + "\tadd\n"
+
+def p_Exp_Termo_sub(p):
+    "Exp : Exp '-' Termo"
+    p[0] = p[1] - p[3] + "\tsub\n"
+
+def p_Exp_Termo(p):
+    "Exp : Termo"
+    p[0] = p[1]
+
+def p_Termo_Fator_mul(p):
+    "Termo : Termo '*' Fator"
+    p[0] = p[1] + p[3] + "\tmul\n"
+
+def p_Termo_Fator_div(p):
+    "Termo : Termo '/' Fator"
+    if (p[3] != 0):
+        p[0] = p[1] + p[3] + "\tdiv\n"
     else:
-        p[0] = "\tpushg " + str(p[1]) + "\n"
+        print("0 encontrado como divisor. Operação impossível")
+        parser.success = False
 
-def p_ExpNum(p):
-    "Exp : NUM"
-    p[0] = "\tpushi " + str(p[1]) + "\n"
+def p_Termo_Fator(p):
+    "Termo : Fator"
+    p[0] = p[1]
 
-def p_ExpVarVar(p):
-    "Exp : VAR OPARIT VAR"
-
-    var1 = p[1]
-    var2 = p[3]
-
-    if var1 not in p.parser.identifier_table:
-        print(var1, ": Variável não declarada!")
-        p.parser.success = False
-    elif var2 not in p.parser.identifier_table:
-        print(var2, ": Variável não declarada!")
-        p.parser.success = False
-    else:
-        offset1 = p.parser.identifier_table[var1][1]
-        offset2 = p.parser.identifier_table[var2][1]
-        p[0] = "\tpushg " + str(offset1) + "\n"
-        p[0] += "\tpushg " + str(offset2) + "\n"
-        
-        if p[2] == '+':
-            p[0] += "\tadd\n"
-        elif p[2] == '-':
-            p[0] += "\tsub\n"
-        elif p[2] == '*':
-            p[0] += "\tmul\n"
-        elif p[2] == '/':
-            p[0] += "\tdiv\n"
-
-def p_ExpVarNum(p):
-    "Exp : VAR OPARIT NUM"
+def p_Fator_Var(p):
+    "Fator : VAR"
     var = p[1]
     if var not in p.parser.identifier_table:
         print(var, ": Variável não declarada!")
@@ -177,31 +157,14 @@ def p_ExpVarNum(p):
     else:
         offset = p.parser.identifier_table[var][1]
         p[0] = "\tpushg " + str(offset) + "\n"
-        p[0] += "\tpushi " + str(p[3]) + "\n"
 
-        if p[2] == '+':
-            p[0] += "\tadd\n"
-        elif p[2] == '-':
-            p[0] += "\tsub\n"
-        elif p[2] == '*':
-            p[0] += "\tmul\n"
-        elif p[2] == '/':
-            p[0] += "\tdiv\n"
-
-def p_ExpNumNum(p):
-    "Exp : NUM OPARIT NUM"
-
+def p_Fator_num(p):
+    "Fator : NUM"
     p[0] = "\tpushi " + str(p[1]) + "\n"
-    p[0] += "\tpushi " + str(p[3]) + "\n"
 
-    if p[2] == '+':
-        p[0] += "\tadd\n"
-    elif p[2] == '-':
-        p[0] += "\tsub\n"
-    elif p[2] == '*':
-        p[0] += "\tmul\n"
-    elif p[2] == '/':
-        p[0] += "\tdiv\n"
+def p_Fator_Exp(p):
+    "Fator : '(' Exp ')'"
+    p[0] = p[2]
 
 def p_ExpRead(p):
     "Exp : READ"
@@ -229,13 +192,14 @@ parser.success = True
 file_name = "output.vm"
 f = open(file_name, "w")
 
-for linha in sys.stdin:
-    result = parser.parse(linha)
-    # print(result)
-    if parser.success == False:
-        os.remove(file_name)
-        break
+
+content = sys.stdin.read()
+parser.parse(content)
+
+if not parser.success:
+    os.remove(file_name)
 
 
 print(parser.identifier_table)
 print(parser.var_offset)
+print(parser.if_count)
