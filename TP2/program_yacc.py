@@ -32,7 +32,7 @@ def p_IntVars2(p):
     "IntVars : IntVar"
     p[0] = p[1]
 
-def p_IntVar(p):
+def p_IntVar1(p):
     "IntVar : VAR"
     
     name = p[1]
@@ -45,6 +45,18 @@ def p_IntVar(p):
         p.parser.var_offset += 1
         p[0] = "\tpushi 0\n"
 
+def p_IntVar2(p):
+    "IntVar : VAR '=' NUM"
+    
+    name = p[1]
+
+    if name in p.parser.identifier_table:
+        print(name, ": Variável já existente!")
+        p.parser.success = False
+    else:
+        p.parser.identifier_table[name] = ['int', p.parser.var_offset, 1]
+        p.parser.var_offset += 1
+        p[0] = "\tpushi " + p[3] + "\n"
 
 # Instructions block
 def p_BeginInstrs(p):
@@ -67,10 +79,27 @@ def p_Instr_IfStat(p):
     "Instr : IF '(' Cond ')' '{' Instrs '}'"
 
     p[0] = p[3]
-    p[0] += "\tjz end_if" + str(p.parser.if_count) + "\n"
+    p[0] += "\tjz end_if_" + str(p.parser.if_count) + "\n"
 
     p[0] += p[6]
-    p[0] += "end_if" + str(p.parser.if_count) + ":\n"
+    p[0] += "end_if_" + str(p.parser.if_count) + ":\n"
+
+    p.parser.if_count += 1
+
+def p_Instr_IfElseStat(p):
+    "Instr : IF '(' Cond ')' '{' Instrs '}' ELSE '{' Instrs '}'"
+
+    count = str(parser.if_count)
+
+    p[0] = p[3]
+    p[0] += "\tjz else_if_" + count + "\n"
+
+    p[0] += p[6]
+    p[0] += "\tjump end_if_" + count + "\n"
+    p[0] += "else_if_" + count + ":\n"
+
+    p[0] += p[10]
+    p[0] += "end_if_" + count + ":\n"
 
     p.parser.if_count += 1
 
