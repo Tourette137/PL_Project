@@ -103,6 +103,26 @@ def p_Instr_IfElseStat(p):
 
     p.parser.if_count += 1
 
+
+def p_Instr_ForStat(p):
+    "Instr : FOR '(' Atribs ';' Cond ';' Atribs ')' '{' Instrs '}'"
+
+    count = str(parser.for_count)
+
+    p[0] =  p[3]
+    p[0] += "jump for_cond_check_" + count + "\n"
+    p[0] += "for_statement_" + count + ":\n"
+
+    p[0] += p[10]
+    p[0] += p[7]
+    p[0] += "for_cond_check_" + count + ":\n"
+    p[0] += p[5]
+    p[0] += "\tnot\n"
+    p[0] += "\tjz for_statement_" + count + "\n"
+
+    p.parser.for_count += 1
+
+
 def p_Cond(p):
     "Cond : Exp OPCOMP Exp"
 
@@ -111,6 +131,9 @@ def p_Cond(p):
 
     if p[2] == '==':
         p[0] += "\tequal\n"
+    elif p[2] == '!=':
+        p[0] += "\tequal\n"
+        p[0] += "\tnot\n"
     elif p[2] == '>':
         p[0] += "\tsup\n"
     elif p[2] == '>=':
@@ -120,9 +143,21 @@ def p_Cond(p):
     elif p[2] == '<=':
         p[0] += "\tinfeq\n"
 
-def p_Instr_Atrib(p):
-    "Instr : VAR '=' Exp ';'"
-    
+def p_Atribs1(p):
+    "Atribs : Atribs ',' Atrib"
+    p[0] = p[1] + p[3]
+
+def p_Atribs2(p):
+    "Atribs : Atrib"
+    p[0] = p[1]
+
+def p_Atribs3(p):
+    "Atribs : "
+    p[0] = ""
+
+def p_Atrib(p):
+    "Atrib : VAR '=' Exp"
+
     name = p[1]
 
     if name in p.parser.identifier_table:
@@ -133,6 +168,12 @@ def p_Instr_Atrib(p):
     else:
         print(name, ": Variável não declarada!")
         p.parser.success = False
+
+
+def p_Instr_Atrib(p):
+    "Instr : Atrib ';'"
+    p[0] = p[1]
+
 
 def p_Instr_PrintNum(p):
     "Instr : WRITE '(' NUM ')' ';'"
@@ -218,6 +259,7 @@ parser = yacc.yacc()
 parser.identifier_table = {}
 parser.var_offset = 0
 parser.if_count = 0
+parser.for_count = 0
 
 # Identifier table
 #  Name  |  Type  |  Offset  |  Size

@@ -1,7 +1,7 @@
 import ply.lex as lex
 import sys
 tokens = ['INT', 'VAR', 'NUM', 'BEGIN_INSTRS', 'END_INSTRS', 'READ', 'WRITE', 'STR',
-    'IF', 'ELSE', 'OPCOMP']
+    'IF', 'ELSE', 'FOR', 'OPCOMP']
 literals = [',', '=', ';', '+', '-', '*', '/', '(', ')', '"', '{', '}']
 
 def t_INT(t):
@@ -24,6 +24,10 @@ def t_ELSE(t):
     r'else'
     return t
 
+def t_FOR(t):
+    r'for'
+    return t
+
 def t_BEGIN_INSTRS(t):
     r'BEGIN'
     return t
@@ -33,7 +37,7 @@ def t_END_INSTRS(t):
     return t
 
 def t_OPCOMP(t):
-    r'(==|>|>=|<|<=)'
+    r'(==|!=|>|>=|<|<=)'
     return t
 
 def t_NUM(t):
