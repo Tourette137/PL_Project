@@ -1,0 +1,18 @@
+INT n = 4, x, i, produto = 1;
+
+BEGIN
+
+write("Insira ");
+write(n);
+write(" números.\n");
+
+for (i = 0; i < n; i = i+1) {
+    x = read();
+    produto = produto * x;
+}
+
+write("\nProduto dos números inseridos: ");
+write(produto);
+write("\n");
+
+END.
