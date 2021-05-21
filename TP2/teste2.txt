@@ -1,0 +1,24 @@
+INT n, x, i, min;
+
+BEGIN
+
+write("Quantos números pretende inserir?\n");
+n = read();
+
+write("Insira os números.\n");
+
+min = read();
+
+for (i = 1; i < n; i = i+1) {
+    x = read();
+
+    if (x < min) {
+        min = x;
+    }
+}
+
+write("\nMenor número inserido: ");
+write(min);
+write("\n");
+
+END.
