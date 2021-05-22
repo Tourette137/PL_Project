@@ -1,8 +1,9 @@
 import ply.lex as lex
 import sys
 tokens = ['INT', 'VAR', 'NUM', 'BEGIN_INSTRS', 'END_INSTRS', 'READ', 'WRITE', 'STR',
-    'IF', 'ELSE', 'FOR', 'REPEAT', 'UNTIL', 'WHILE', 'DO', 'OPCOMP', 'OPLOGIC', 'ARR', 'ARRVAR', 'MATVAR']
-literals = [',', '=', ';', '+', '-', '*', '/', '(', ')', '"', '{', '}']
+    'IF', 'ELSE', 'FOR', 'REPEAT', 'UNTIL', 'WHILE', 'DO', 'OPCOMP', 'OPLOGIC', 'ARR',
+    'ARRNUM', 'ARREXP_OPEN', 'ARREXP_CLOSE', 'MATVAR']
+literals = [',', '=', ';', '+', '-', '*', '/', '%', '(', ')', '"', '{', '}']
 
 def t_INT(t):
     r'INT'
@@ -61,7 +62,7 @@ def t_OPLOGIC(t):
     return t
 
 def t_OPCOMP(t):
-    r'(==|!=|>|>=|<|<=)'
+    r'(==|!=|>=|>|<=|<)'
     return t
 
 def t_NUM(t):
@@ -72,8 +73,16 @@ def t_MATVAR(t):
     r'[a-z]+\[\d+\]\[\d+\]'
     return t
 
-def t_ARRVAR(t):
+def t_ARRNUM(t):
     r'[a-z]+\[\d+\]'
+    return t
+
+def t_ARREXP_OPEN(t):
+    r'[a-z]+\['
+    return t
+
+def t_ARREXP_CLOSE(t):
+    r'\]'
     return t
 
 def t_VAR(t):
