@@ -1,0 +1,23 @@
+INT i;
+ARR a[6];
+
+BEGIN
+
+write("Insira 6 números.\n");
+
+a[0] = read();
+a[1] = read();
+a[2] = read();
+a[3] = read();
+a[4] = read();
+a[5] = read();
+
+for (i = 5; i > 0; i = i - 1) {
+    write(a[i]);
+    write(" -> ");
+}
+
+write(a[0]);
+write("\n");
+
+END.

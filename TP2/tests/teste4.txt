@@ -1,0 +1,23 @@
+INT count, i;
+ARR a[6];
+
+BEGIN
+
+a[0] = 4;
+a[1] = 2;
+a[2] = 7;
+a[3] = 3;
+a[4] = 1;
+a[5] = 8;
+
+for (i = 0, count = 0; i < 6; i = i + 1) {
+    if (a[i] % 2 == 1) {
+        count = count + 1;
+    }
+}
+
+write("Números ímpares detetados na sequência: ");
+write(count);
+write("\n");
+
+END.
