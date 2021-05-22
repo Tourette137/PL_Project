@@ -162,6 +162,33 @@ def p_Instr_IfElseStat(p):
 
     p.parser.if_count += 1
 
+def p_Instr_RepeatStat(p):
+    "Instr : REPEAT '{' Instrs '}' UNTIL '(' Conds ')'"
+
+    count = str(parser.repeat_count)
+
+    p[0] = "repeatstat" + count + ":\n"
+    p[0] += p[3]
+    p[0] += p[7]
+    p[0] += "\tjz repeatstat" + count + "\n"
+
+    p.parser.repeat_count += 1
+
+def p_Instr_WhileStat(p):
+    "Instr : WHILE '(' Conds ')' DO '{' Instrs '}'"
+
+    count = str(parser.for_count)
+
+    p[0] = "whilestat" + count + ":\n"
+    p[0] +=  p[3]
+    p[0] += "\tjz endwhilestat" + count + "\n"
+
+    p[0] += p[7]
+    p[0] += "jump whilestat" + count + ":\n"
+    p[0] += "endwhilestat" + count + ":\n"
+
+    p.parser.while_count += 1
+
 def p_Instr_ForStat(p):
     "Instr : FOR '(' Atribs ';' Conds ';' Atribs ')' '{' Instrs '}'"
 
@@ -488,6 +515,8 @@ parser = yacc.yacc()
 parser.identifier_table = {}  # {'var' : [type, offset, size]}
 parser.var_offset = 0
 parser.if_count = 0
+parser.repeat_count = 0
+parser.while_count = 0
 parser.for_count = 0
 
 # Read input and parse it
