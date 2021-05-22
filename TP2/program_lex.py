@@ -1,7 +1,7 @@
 import ply.lex as lex
 import sys
 tokens = ['INT', 'VAR', 'NUM', 'BEGIN_INSTRS', 'END_INSTRS', 'READ', 'WRITE', 'STR',
-    'IF', 'ELSE', 'FOR', 'OPCOMP', 'OPLOGIC', 'ARR', 'ARRVAR']
+    'IF', 'ELSE', 'FOR', 'OPCOMP', 'OPLOGIC', 'ARR', 'ARRVAR', 'MATVAR']
 literals = [',', '=', ';', '+', '-', '*', '/', '(', ')', '"', '{', '}']
 
 def t_INT(t):
@@ -50,6 +50,10 @@ def t_OPCOMP(t):
 
 def t_NUM(t):
     r'\d+'
+    return t
+
+def t_MATVAR(t):
+    r'[a-z]+\[\d+\]\[\d+\]'
     return t
 
 def t_ARRVAR(t):

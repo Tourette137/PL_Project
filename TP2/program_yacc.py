@@ -18,9 +18,13 @@ def p_Decls1(p):
     "Decls : IntDecls ArrDecls"
     p[0] = p[1] + p[2]
 
-def p_IntDecls(p):
+def p_IntDecls1(p):
     "IntDecls : INT IntVars ';'"
     p[0] = p[2]
+
+def p_IntDecls2(p):
+    "IntDecls : "
+    p[0] = ""
 
 def p_IntVars1(p):
     "IntVars : IntVars ',' IntVar"
@@ -56,9 +60,13 @@ def p_IntVar2(p):
         p.parser.var_offset += 1
         p[0] = "\tpushi " + p[3] + "\n"
 
-def p_ArrDecls(p):
+def p_ArrDecls1(p):
     "ArrDecls : ARR ArrVars ';'"
     p[0] = p[2]
+
+def p_ArrDecls2(p):
+    "ArrDecls : "
+    p[0] = ""
 
 def p_ArrVars1(p):
     "ArrVars : ArrVars ',' ArrVar"
@@ -66,6 +74,14 @@ def p_ArrVars1(p):
 
 def p_ArrVars2(p):
     "ArrVars : ArrVar"
+    p[0] = p[1]
+
+def p_ArrVars3(p):
+    "ArrVars : ArrVars ',' MatVar"
+    p[0] = p[1] + p[3]
+
+def p_ArrVars4(p):
+    "ArrVars : MatVar"
     p[0] = p[1]
 
 def p_ArrVar(p):
@@ -82,6 +98,24 @@ def p_ArrVar(p):
         p.parser.identifier_table[name] = ['arr', p.parser.var_offset, size]
         p.parser.var_offset += size
         p[0] = "\tpushn " + str(size) + "\n"
+
+def p_MatVar(p):
+    "MatVar : MATVAR"
+
+    result = re.search(r'([a-z]+)\[(\d+)\]\[(\d+)\]', p[1])
+    name = result.group(1)
+    lines = int(result.group(2))
+    cols = int(result.group(3))
+
+    if name in p.parser.identifier_table:
+        print(name, ": Variável já existente!")
+        p.parser.success = False
+    else:
+        p.parser.identifier_table[name] = ['mat', p.parser.var_offset, lines, cols]
+        size = lines * cols
+        p.parser.var_offset += size
+        p[0] = "\tpushn " + str(size) + "\n"
+
 
 # Instructions block
 def p_BeginInstrs(p):
@@ -244,6 +278,32 @@ def p_AtribArrVar(p):
         print(name, ": Variável não declarada!")
         p.parser.success = False
 
+def p_AtribMatVar(p):
+    "Atrib : MATVAR '=' Exp"
+
+    result = re.search(r'([a-z]+)\[(\d+)\]\[(\d+)\]', p[1])
+    name = result.group(1)
+    lines = int(result.group(2))
+    cols = int(result.group(3))
+    pos = lines * cols + cols
+
+    if name in p.parser.identifier_table:
+        offset = p.parser.identifier_table[name][1]
+        
+        p[0] = p[3]
+        # expression value is on top of the stack
+
+        # get array pointer
+        p[0] += "\tpushgp\n"
+        p[0] += "\tpushi " + str(offset) + "\n"
+        p[0] += "\tpadd\n"
+        # swap values so we can match STOREN command sintax
+        p[0] += "\tswap\n"
+        # store value in array
+        p[0] += "\tstore " + str(pos) + "\n"
+    else:
+        print(name, ": Variável não declarada!")
+        p.parser.success = False
 
 def p_Instr_Atrib(p):
     "Instr : Atrib ';'"
@@ -290,6 +350,33 @@ def p_Instr_PrintArrVar(p):
     else:
         print(name, ": Variável não declarada!")
         p.parser.success = False
+
+def p_Instr_PrintMatVar(p):
+    "Instr : WRITE '(' MATVAR ')' ';'"
+
+    result = re.search(r'([a-z]+)\[(\d+)\]\[(\d+)\]', p[3])
+    name = result.group(1)
+    lines = int(result.group(2))
+    cols = int(result.group(3))
+    pos = lines * cols + cols
+
+    if name in p.parser.identifier_table:
+        offset = p.parser.identifier_table[name][1]
+
+        # put array pointer on top of the stack
+        p[0] = "\tpushgp\n"
+        p[0] += "\tpushi " + str(offset) + "\n"
+        p[0] += "\tpadd\n"
+        
+        # load value in the array
+        p[0] += "\tload " + str(pos) + "\n"
+
+        # send value to output
+        p[0] += "\twritei\n"
+    else:
+        print(name, ": Variável não declarada!")
+        p.parser.success = False
+
 
 def p_Instr_PrintStr(p):
     "Instr : WRITE '(' STR ')' ';'"
@@ -355,6 +442,28 @@ def p_Fator_ArrVar(p):
         print(name, ": Variável não declarada!")
         p.parser.success = False
 
+def p_Fator_MatVar(p):
+    "Fator : MATVAR"
+
+    result = re.search(r'([a-z]+)\[(\d+)\]\[(\d+)\]', p[1])
+    name = result.group(1)
+    lines = int(result.group(2))
+    cols = int(result.group(3))
+    pos = lines * cols + cols
+
+    if name in p.parser.identifier_table:
+        offset = p.parser.identifier_table[name][1]
+
+        # put array pointer on top of the stack
+        p[0] = "\tpushgp\n"
+        p[0] += "\tpushi " + str(offset) + "\n"
+        p[0] += "\tpadd\n"
+        
+        # load value in the array
+        p[0] += "\tload " + str(pos) + "\n"
+    else:
+        print(name, ": Variável não declarada!")
+        p.parser.success = False
 
 def p_Fator_num(p):
     "Fator : NUM"
