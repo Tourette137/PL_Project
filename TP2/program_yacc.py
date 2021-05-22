@@ -1,7 +1,9 @@
 import ply.yacc as yacc
 from program_lex import tokens
+
 import sys
 import os
+import re
 
 # Production rules
 def p_Program(p):
@@ -13,15 +15,11 @@ def p_Program(p):
 
 # Declaration block
 def p_Decls1(p):
-    "Decls : Decls Decl"
+    "Decls : IntDecls ArrDecls"
     p[0] = p[1] + p[2]
 
-def p_Decls2(p):
-    "Decls : Decl"
-    p[0] = p[1]
-
-def p_Decl(p):
-    "Decl : INT IntVars ';'"
+def p_IntDecls(p):
+    "IntDecls : INT IntVars ';'"
     p[0] = p[2]
 
 def p_IntVars1(p):
@@ -41,7 +39,7 @@ def p_IntVar1(p):
         print(name, ": Variável já existente!")
         p.parser.success = False
     else:
-        p.parser.identifier_table[name] = ['int', p.parser.var_offset, 1]
+        p.parser.identifier_table[name] = ['int', p.parser.var_offset]
         p.parser.var_offset += 1
         p[0] = "\tpushi 0\n"
 
@@ -54,9 +52,36 @@ def p_IntVar2(p):
         print(name, ": Variável já existente!")
         p.parser.success = False
     else:
-        p.parser.identifier_table[name] = ['int', p.parser.var_offset, 1]
+        p.parser.identifier_table[name] = ['int', p.parser.var_offset]
         p.parser.var_offset += 1
         p[0] = "\tpushi " + p[3] + "\n"
+
+def p_ArrDecls(p):
+    "ArrDecls : ARR ArrVars ';'"
+    p[0] = p[2]
+
+def p_ArrVars1(p):
+    "ArrVars : ArrVars ',' ArrVar"
+    p[0] = p[1] + p[3]
+
+def p_ArrVars2(p):
+    "ArrVars : ArrVar"
+    p[0] = p[1]
+
+def p_ArrVar(p):
+    "ArrVar : ARRVAR"
+
+    result = re.search(r'([a-z]+)\[(\d+)\]', p[1])
+    name = result.group(1)
+    size = int(result.group(2))
+
+    if name in p.parser.identifier_table:
+        print(name, ": Variável já existente!")
+        p.parser.success = False
+    else:
+        p.parser.identifier_table[name] = ['arr', p.parser.var_offset, size]
+        p.parser.var_offset += size
+        p[0] = "\tpushn " + str(size) + "\n"
 
 # Instructions block
 def p_BeginInstrs(p):
@@ -102,7 +127,6 @@ def p_Instr_IfElseStat(p):
     p[0] += "endif" + count + ":\n"
 
     p.parser.if_count += 1
-
 
 def p_Instr_ForStat(p):
     "Instr : FOR '(' Atribs ';' Conds ';' Atribs ')' '{' Instrs '}'"
@@ -181,7 +205,7 @@ def p_Atribs3(p):
     "Atribs : "
     p[0] = ""
 
-def p_Atrib(p):
+def p_AtribVar(p):
     "Atrib : VAR '=' Exp"
 
     name = p[1]
@@ -195,11 +219,35 @@ def p_Atrib(p):
         print(name, ": Variável não declarada!")
         p.parser.success = False
 
+def p_AtribArrVar(p):
+    "Atrib : ARRVAR '=' Exp"
+
+    result = re.search(r'([a-z]+)\[(\d+)\]', p[1])
+    name = result.group(1)
+    pos = int(result.group(2))
+
+    if name in p.parser.identifier_table:
+        offset = p.parser.identifier_table[name][1]
+        
+        p[0] = p[3]
+        # expression value is on top of the stack
+
+        # get array pointer
+        p[0] += "\tpushgp\n"
+        p[0] += "\tpushi " + str(offset) + "\n"
+        p[0] += "\tpadd\n"
+        # swap values so we can match STOREN command sintax
+        p[0] += "\tswap\n"
+        # store value in array
+        p[0] += "\tstore " + str(pos) + "\n"
+    else:
+        print(name, ": Variável não declarada!")
+        p.parser.success = False
+
 
 def p_Instr_Atrib(p):
     "Instr : Atrib ';'"
     p[0] = p[1]
-
 
 def p_Instr_PrintNum(p):
     "Instr : WRITE '(' NUM ')' ';'"
@@ -214,6 +262,30 @@ def p_Instr_PrintVar(p):
     if name in p.parser.identifier_table:
         offset = p.parser.identifier_table[name][1]
         p[0] = "\tpushg " + str(offset) + "\n"
+        p[0] += "\twritei\n"
+    else:
+        print(name, ": Variável não declarada!")
+        p.parser.success = False
+
+def p_Instr_PrintArrVar(p):
+    "Instr : WRITE '(' ARRVAR ')' ';'"
+
+    result = re.search(r'([a-z]+)\[(\d+)\]', p[3])
+    name = result.group(1)
+    pos = int(result.group(2))
+
+    if name in p.parser.identifier_table:
+        offset = p.parser.identifier_table[name][1]
+
+        # put array pointer on top of the stack
+        p[0] = "\tpushgp\n"
+        p[0] += "\tpushi " + str(offset) + "\n"
+        p[0] += "\tpadd\n"
+        
+        # load value in the array
+        p[0] += "\tload " + str(pos) + "\n"
+
+        # send value to output
         p[0] += "\twritei\n"
     else:
         print(name, ": Variável não declarada!")
@@ -262,6 +334,28 @@ def p_Fator_Var(p):
         offset = p.parser.identifier_table[var][1]
         p[0] = "\tpushg " + str(offset) + "\n"
 
+def p_Fator_ArrVar(p):
+    "Fator : ARRVAR"
+
+    result = re.search(r'([a-z]+)\[(\d+)\]', p[1])
+    name = result.group(1)
+    pos = int(result.group(2))
+
+    if name in p.parser.identifier_table:
+        offset = p.parser.identifier_table[name][1]
+
+        # put array pointer on top of the stack
+        p[0] = "\tpushgp\n"
+        p[0] += "\tpushi " + str(offset) + "\n"
+        p[0] += "\tpadd\n"
+        
+        # load value in the array
+        p[0] += "\tload " + str(pos) + "\n"
+    else:
+        print(name, ": Variável não declarada!")
+        p.parser.success = False
+
+
 def p_Fator_num(p):
     "Fator : NUM"
     p[0] = "\tpushi " + str(p[1]) + "\n"
@@ -282,14 +376,10 @@ def p_error(p):
 
 # Build parser
 parser = yacc.yacc()
-parser.identifier_table = {}
+parser.identifier_table = {}  # {'var' : [type, offset, size]}
 parser.var_offset = 0
 parser.if_count = 0
 parser.for_count = 0
-
-# Identifier table
-#  Name  |  Type  |  Offset  |  Size
-
 
 # Read input and parse it
 # Line by line
