@@ -11,6 +11,11 @@ def p_ExpRead(p):
     p[0] = "\tread\n"
     p[0] += "\tatoi\n"
 
+def p_Instr_PrintStr(p):
+    "Instr : WRITE '(' STR ')' ';'"
+    p[0] = "\tpushs " + p[3] + "\n"
+    p[0] += "\twrites\n"
+
 def p_Instr_PrintNum(p):
     "Instr : WRITE '(' NUM ')' ';'"
     p[0] = "\tpushi " + str(p[3]) + "\n"
@@ -29,32 +34,8 @@ def p_Instr_PrintVar(p):
         print(name, ": Variável não declarada!")
         p.parser.success = False
 
-def p_Instr_PrintArrNum(p):
-    "Instr : WRITE '(' ARRNUM ')' ';'"
-
-    result = re.search(r'([a-z]+)\[(\d+)\]', p[3])
-    name = result.group(1)
-    pos = int(result.group(2))
-
-    if name in p.parser.identifier_table:
-        offset = p.parser.identifier_table[name][1]
-
-        # put array pointer on top of the stack
-        p[0] = "\tpushgp\n"
-        p[0] += "\tpushi " + str(offset) + "\n"
-        p[0] += "\tpadd\n"
-        
-        # load value in the array
-        p[0] += "\tload " + str(pos) + "\n"
-
-        # send value to output
-        p[0] += "\twritei\n"
-    else:
-        print(name, ": Variável não declarada!")
-        p.parser.success = False
-
-def p_Instr_PrintArrExp(p):
-    "Instr : WRITE '(' ARREXP_OPEN Exp ARREXP_CLOSE ')' ';'"
+def p_Instr_PrintArray(p):
+    "Instr : WRITE '(' ARR_OPEN Exp ARR_CLOSE ')' ';'"
 
     result = re.search(r'([a-z]+)\[', p[3])
     name = result.group(1)
@@ -104,9 +85,3 @@ def p_Instr_PrintMatVar(p):
     else:
         print(name, ": Variável não declarada!")
         p.parser.success = False
-
-
-def p_Instr_PrintStr(p):
-    "Instr : WRITE '(' STR ')' ';'"
-    p[0] = "\tpushs " + p[3] + "\n"
-    p[0] += "\twrites\n"

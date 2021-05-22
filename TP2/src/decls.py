@@ -7,7 +7,7 @@ from src.ios import *
 import re
 
 def p_Decls1(p):
-    "Decls : IntDecls ArrDecls"
+    "Decls : IntDecls ArrayDecls"
     p[0] = p[1] + p[2]
 
 def p_IntDecls1(p):
@@ -52,44 +52,36 @@ def p_IntVar2(p):
         p.parser.var_offset += 1
         p[0] = "\tpushi " + p[3] + "\n"
 
-def p_ArrDecls1(p):
-    "ArrDecls : ARR ArrNums ';'"
+def p_ArrayDecls1(p):
+    "ArrayDecls : ARRAY Arrays ';'"
     p[0] = p[2]
 
-def p_ArrDecls2(p):
-    "ArrDecls : "
+def p_ArrayDecls2(p):
+    "ArrayDecls : "
     p[0] = ""
 
-def p_ArrNums1(p):
-    "ArrNums : ArrNums ',' ArrNum"
+def p_Arrays1(p):
+    "Arrays : Arrays ',' Array"
     p[0] = p[1] + p[3]
 
-def p_ArrNums2(p):
-    "ArrNums : ArrNum"
+def p_Arrays2(p):
+    "Arrays : Array"
     p[0] = p[1]
 
-def p_ArrNums3(p):
-    "ArrNums : ArrNums ',' MatVar"
+def p_Arrays3(p):
+    "Arrays : Arrays ',' MatVar"
     p[0] = p[1] + p[3]
 
-def p_ArrNums4(p):
-    "ArrNums : MatVar"
+def p_Arrays4(p):
+    "Arrays : MatVar"
     p[0] = p[1]
 
-def p_ArrNum(p):
-    "ArrNum : ARRNUM"
+def p_Array(p):
+    "Array : ARR_OPEN NUM ARR_CLOSE"
 
-    result1 = re.search(r'([a-z]+)\[(.+)\]', p[1])
-
-    if not result1:
-        arr = re.search(r'(\w+)\[', p[1]).group(1)
-        print("Sintaxe errada na declaração do array:", arr)
-    else:
-        name = result1.group(1)
-        result2 = re.search(r'(\d+)', result1.group(2))
-        size = int(result2.group(1))
-
-
+    result1 = re.search(r'([a-z]+)\[', p[1])
+    name = result1.group(1)
+    size = int(p[2])
 
     if name in p.parser.identifier_table:
         print(name, ": Variável já existente!")

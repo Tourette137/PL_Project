@@ -32,8 +32,8 @@ def p_AtribVar(p):
         print(name, ": Variável não declarada!")
         p.parser.success = False
 
-def p_AtribArrExp(p):
-    "Atrib : ARREXP_OPEN Exp ARREXP_CLOSE '=' Exp"
+def p_AtribArray(p):
+    "Atrib : ARR_OPEN Exp ARR_CLOSE '=' Exp"
 
     result = re.search(r'([a-z]+)\[', p[1])
     name = result.group(1)
@@ -54,31 +54,6 @@ def p_AtribArrExp(p):
 
         # store Exp value in array
         p[0] += "\tstoren\n"
-    else:
-        print(name, ": Variável não declarada!")
-        p.parser.success = False
-
-def p_AtribArrNum(p):
-    "Atrib : ARRNUM '=' Exp"
-
-    result = re.search(r'([a-z]+)\[(\d+)\]', p[1])
-    name = result.group(1)
-    pos = int(result.group(2))
-
-    if name in p.parser.identifier_table:
-        offset = p.parser.identifier_table[name][1]
-        
-        p[0] = p[3]
-        # expression value is on top of the stack
-
-        # get array pointer
-        p[0] += "\tpushgp\n"
-        p[0] += "\tpushi " + str(offset) + "\n"
-        p[0] += "\tpadd\n"
-        # swap values so we can match STOREN command sintax
-        p[0] += "\tswap\n"
-        # store value in array
-        p[0] += "\tstore " + str(pos) + "\n"
     else:
         print(name, ": Variável não declarada!")
         p.parser.success = False

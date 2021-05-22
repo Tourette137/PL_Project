@@ -43,6 +43,14 @@ def p_Termo_Fator(p):
     "Termo : Fator"
     p[0] = p[1]
 
+def p_Fator_num(p):
+    "Fator : NUM"
+    p[0] = "\tpushi " + str(p[1]) + "\n"
+
+def p_Fator_Exp(p):
+    "Fator : '(' Exp ')'"
+    p[0] = p[2]
+
 def p_Fator_Var(p):
     "Fator : VAR"
     var = p[1]
@@ -53,29 +61,8 @@ def p_Fator_Var(p):
         offset = p.parser.identifier_table[var][1]
         p[0] = "\tpushg " + str(offset) + "\n"
 
-def p_Fator_ArrNum(p):
-    "Fator : ARRNUM"
-
-    result = re.search(r'([a-z]+)\[(\d+)\]', p[1])
-    name = result.group(1)
-    pos = int(result.group(2))
-
-    if name in p.parser.identifier_table:
-        offset = p.parser.identifier_table[name][1]
-
-        # put array pointer on top of the stack
-        p[0] = "\tpushgp\n"
-        p[0] += "\tpushi " + str(offset) + "\n"
-        p[0] += "\tpadd\n"
-        
-        # load value in the array
-        p[0] += "\tload " + str(pos) + "\n"
-    else:
-        print(name, ": Variável não declarada!")
-        p.parser.success = False
-
-def p_Fator_ArrExp(p):
-    "Fator : ARREXP_OPEN Exp ARREXP_CLOSE"
+def p_Fator_Array(p):
+    "Fator : ARR_OPEN Exp ARR_CLOSE"
 
     result = re.search(r'([a-z]+)\[', p[1])
     name = result.group(1)
@@ -119,11 +106,3 @@ def p_Fator_MatVar(p):
     else:
         print(name, ": Variável não declarada!")
         p.parser.success = False
-
-def p_Fator_num(p):
-    "Fator : NUM"
-    p[0] = "\tpushi " + str(p[1]) + "\n"
-
-def p_Fator_Exp(p):
-    "Fator : '(' Exp ')'"
-    p[0] = p[2]

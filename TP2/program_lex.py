@@ -1,16 +1,16 @@
 import ply.lex as lex
 import sys
 tokens = ['INT', 'VAR', 'NUM', 'BEGIN_INSTRS', 'END_INSTRS', 'READ', 'WRITE', 'STR',
-    'IF', 'ELSE', 'FOR', 'REPEAT', 'UNTIL', 'WHILE', 'DO', 'OPCOMP', 'OPLOGIC', 'ARR',
-    'ARRNUM', 'ARREXP_OPEN', 'ARREXP_CLOSE', 'MATVAR']
+    'IF', 'ELSE', 'FOR', 'REPEAT', 'UNTIL', 'WHILE', 'DO', 'OPCOMP', 'OPLOGIC', 'ARRAY',
+    'ARR_OPEN', 'ARR_CLOSE', 'MATVAR']
 literals = [',', '=', ';', '+', '-', '*', '/', '%', '(', ')', '"', '{', '}']
 
 def t_INT(t):
     r'INT'
     return t
 
-def t_ARR(t):
-    r'ARR'
+def t_ARRAY(t):
+    r'ARRAY'
     return t
 
 def t_READ(t):
@@ -73,15 +73,11 @@ def t_MATVAR(t):
     r'[a-z]+\[\d+\]\[\d+\]'
     return t
 
-def t_ARRNUM(t):
-    r'[a-z]+\[\d+\]'
-    return t
-
-def t_ARREXP_OPEN(t):
+def t_ARR_OPEN(t):
     r'[a-z]+\['
     return t
 
-def t_ARREXP_CLOSE(t):
+def t_ARR_CLOSE(t):
     r'\]'
     return t
 
