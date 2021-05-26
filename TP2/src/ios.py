@@ -35,7 +35,7 @@ def p_Instr_PrintVar(p):
         p.parser.success = False
 
 def p_Instr_PrintArray(p):
-    "Instr : WRITE '(' ARR_OPEN Exp ARR_CLOSE ')' ';'"
+    "Instr : WRITE '(' ARR_OPEN Exp ']' ')' ';'"
 
     result = re.search(r'([a-z]+)\[', p[3])
     name = result.group(1)
@@ -60,25 +60,31 @@ def p_Instr_PrintArray(p):
         print(name, ": Variável não declarada!")
         p.parser.success = False
 
-def p_Instr_PrintMatVar(p):
-    "Instr : WRITE '(' MATVAR ')' ';'"
+def p_Instr_PrintMatrix(p):
+    "Instr : WRITE '(' ARR_OPEN Exp MAT_INT Exp ']' ')' ';'"
 
-    result = re.search(r'([a-z]+)\[(\d+)\]\[(\d+)\]', p[3])
+    result = re.search(r'([a-z]+)\[', p[3])
     name = result.group(1)
-    lines = int(result.group(2))
-    cols = int(result.group(3))
-    pos = lines * cols + cols
 
     if name in p.parser.identifier_table:
         offset = p.parser.identifier_table[name][1]
+        cols = p.parser.identifier_table[name][3]
 
         # put array pointer on top of the stack
         p[0] = "\tpushgp\n"
         p[0] += "\tpushi " + str(offset) + "\n"
         p[0] += "\tpadd\n"
+
+        # put n(pos in array) on top of the stack
+        p[0] += p[4]
+        p[0] += "\tpushi " + str(cols) + "\n"
+        p[0] += "\tmul"
+
+        p[0] += p[6]
+        p[0] += "\tadd"
         
         # load value in the array
-        p[0] += "\tload " + str(pos) + "\n"
+        p[0] += "\tloadn\n"
 
         # send value to output
         p[0] += "\twritei\n"

@@ -33,7 +33,7 @@ def p_AtribVar(p):
         p.parser.success = False
 
 def p_AtribArray(p):
-    "Atrib : ARR_OPEN Exp ARR_CLOSE '=' Exp"
+    "Atrib : ARR_OPEN Exp ']' '=' Exp"
 
     result = re.search(r'([a-z]+)\[', p[1])
     name = result.group(1)
@@ -58,29 +58,34 @@ def p_AtribArray(p):
         print(name, ": Variável não declarada!")
         p.parser.success = False
 
-def p_AtribMatVar(p):
-    "Atrib : MATVAR '=' Exp"
+def p_AtribMatrix(p):
+    "Atrib : ARR_OPEN Exp MAT_INT Exp ']' '=' Exp"
 
-    result = re.search(r'([a-z]+)\[(\d+)\]\[(\d+)\]', p[1])
+    result = re.search(r'([a-z]+)\[', p[1])
     name = result.group(1)
-    lines = int(result.group(2))
-    cols = int(result.group(3))
-    pos = lines * cols + cols
 
     if name in p.parser.identifier_table:
         offset = p.parser.identifier_table[name][1]
+        cols = p.parser.identifier_table[name][3]
         
-        p[0] = p[3]
-        # expression value is on top of the stack
-
-        # get array pointer
-        p[0] += "\tpushgp\n"
+        # put array pointer on top of the stack
+        p[0] = "\tpushgp\n"
         p[0] += "\tpushi " + str(offset) + "\n"
         p[0] += "\tpadd\n"
-        # swap values so we can match STOREN command sintax
-        p[0] += "\tswap\n"
-        # store value in array
-        p[0] += "\tstore " + str(pos) + "\n"
+
+        # put n(pos in array) on top of the stack
+        p[0] += p[2]
+        p[0] += "\tpushi " + str(cols) + "\n"
+        p[0] += "\tmul"
+
+        p[0] += p[4]
+        p[0] += "\tadd"
+                
+        # put Exp value on top of the stack
+        p[0] += p[7]
+
+        # store Exp value in array
+        p[0] += "\tstoren\n"
     else:
         print(name, ": Variável não declarada!")
         p.parser.success = False

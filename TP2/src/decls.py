@@ -69,15 +69,15 @@ def p_Arrays2(p):
     p[0] = p[1]
 
 def p_Arrays3(p):
-    "Arrays : Arrays ',' MatVar"
+    "Arrays : Arrays ',' Matrix"
     p[0] = p[1] + p[3]
 
 def p_Arrays4(p):
-    "Arrays : MatVar"
+    "Arrays : Matrix"
     p[0] = p[1]
 
 def p_Array(p):
-    "Array : ARR_OPEN NUM ARR_CLOSE"
+    "Array : ARR_OPEN NUM ']'"
 
     result1 = re.search(r'([a-z]+)\[', p[1])
     name = result1.group(1)
@@ -91,13 +91,13 @@ def p_Array(p):
         p.parser.var_offset += size
         p[0] = "\tpushn " + str(size) + "\n"
 
-def p_MatVar(p):
-    "MatVar : MATVAR"
+def p_Matrix(p):
+    "Matrix : ARR_OPEN NUM MAT_INT NUM ']'"
 
-    result = re.search(r'([a-z]+)\[(\d+)\]\[(\d+)\]', p[1])
+    result = re.search(r'([a-z]+)\[', p[1])
     name = result.group(1)
-    lines = int(result.group(2))
-    cols = int(result.group(3))
+    lines = int(p[2])
+    cols = int(p[4])
 
     if name in p.parser.identifier_table:
         print(name, ": Variável já existente!")

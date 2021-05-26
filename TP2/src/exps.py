@@ -62,7 +62,7 @@ def p_Fator_Var(p):
         p[0] = "\tpushg " + str(offset) + "\n"
 
 def p_Fator_Array(p):
-    "Fator : ARR_OPEN Exp ARR_CLOSE"
+    "Fator : ARR_OPEN Exp ']'"
 
     result = re.search(r'([a-z]+)\[', p[1])
     name = result.group(1)
@@ -84,25 +84,31 @@ def p_Fator_Array(p):
         print(name, ": Variável não declarada!")
         p.parser.success = False
 
-def p_Fator_MatVar(p):
-    "Fator : MATVAR"
+def p_Fator_Matrix(p):
+    "Fator : ARR_OPEN Exp MAT_INT Exp ']'"
 
-    result = re.search(r'([a-z]+)\[(\d+)\]\[(\d+)\]', p[1])
+    result = re.search(r'([a-z]+)\[', p[1])
     name = result.group(1)
-    lines = int(result.group(2))
-    cols = int(result.group(3))
-    pos = lines * cols + cols
 
     if name in p.parser.identifier_table:
         offset = p.parser.identifier_table[name][1]
+        cols = p.parser.identifier_table[name][3]
 
         # put array pointer on top of the stack
         p[0] = "\tpushgp\n"
         p[0] += "\tpushi " + str(offset) + "\n"
         p[0] += "\tpadd\n"
+
+        # put n(pos in array) on top of the stack
+        p[0] += p[2]
+        p[0] += "\tpushi " + str(cols) + "\n"
+        p[0] += "\tmul"
+
+        p[0] += p[4]
+        p[0] += "\tadd"
         
         # load value in the array
-        p[0] += "\tload " + str(pos) + "\n"
+        p[0] += "\tloadn\n"
     else:
         print(name, ": Variável não declarada!")
         p.parser.success = False
