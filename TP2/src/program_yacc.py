@@ -1,12 +1,12 @@
 import ply.yacc as yacc
 from program_lex import tokens
 
-from src.atribs import *
-from src.conds import *
-from src.decls import *
-from src.exps import *
-from src.instrs import *
-from src.ios import *
+from atribs import *
+from conds import *
+from decls import *
+from exps import *
+from instrs import *
+from ios import *
 
 import sys
 import os
@@ -26,7 +26,7 @@ def p_error(p):
 
 
 # Build parser
-parser = yacc.yacc(start='Program')
+parser = yacc.yacc(start='Program', outputdir='out')
 parser.identifier_table = {}  # {'var' : [type, offset, size]}
 parser.var_offset = 0
 parser.if_count = 0

@@ -1,8 +1,8 @@
-from src.atribs import *
-from src.conds import *
-from src.exps import *
-from src.instrs import *
-from src.ios import *
+from atribs import *
+from conds import *
+from exps import *
+from instrs import *
+from ios import *
 
 import re
 

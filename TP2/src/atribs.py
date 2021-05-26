@@ -1,8 +1,8 @@
-from src.conds import *
-from src.decls import *
-from src.exps import *
-from src.instrs import *
-from src.ios import *
+from conds import *
+from decls import *
+from exps import *
+from instrs import *
+from ios import *
 
 import re
 

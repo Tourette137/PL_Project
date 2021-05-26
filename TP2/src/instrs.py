@@ -1,8 +1,8 @@
-from src.atribs import *
-from src.conds import *
-from src.decls import *
-from src.exps import *
-from src.ios import *
+from atribs import *
+from conds import *
+from decls import *
+from exps import *
+from ios import *
 
 def p_BeginInstrs(p):
     "BeginInstrs : BEGIN_INSTRS"
