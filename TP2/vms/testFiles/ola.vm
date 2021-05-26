@@ -1,0 +1,15 @@
+	pushi 0
+	pushi 0
+start
+	pushg 1
+	pushg 0
+	add
+	pushg 1
+	pushg 0
+	mul
+	sub
+	jz end
+	pushi 5
+	writei
+end:
+stop
