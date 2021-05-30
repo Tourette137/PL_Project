@@ -1,3 +1,4 @@
+from typing import Type
 import ply.yacc as yacc
 from program_lex import tokens
 
@@ -49,13 +50,17 @@ else:
     
     file_name = "output.vm"
 
+
 f = open(file_name, "w")
-parser.parse(content)
+try:
+    parser.parse(content)
+except SyntaxError as e1:
+    print("Syntax Error. [Verifique possíveis erros na escrita do código]\n")
+except TypeError as e2:
+    print("Syntax Error. [Verifique possíveis erros na escrita do código]\n")
 
 if not parser.success:
     os.remove(file_name)
-
-
 
 
 #print(parser.identifier_table)

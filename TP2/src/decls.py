@@ -11,8 +11,8 @@ def p_Decls(p):
     p[0] = p[1] + p[2]
 
 def p_IntDecls(p):
-    "IntDecls : INT IntVars ';'"
-    p[0] = p[2]
+    "IntDecls : IntDecls INT IntVars ';'"
+    p[0] = p[1] + p[3]
 
 def p_IntDecls_Empty(p):
     "IntDecls : "
@@ -53,8 +53,8 @@ def p_IntVar_VarNum(p):
         p[0] = "\tpushi " + p[3] + "\n"
 
 def p_ArrayDecls(p):
-    "ArrayDecls : ARRAY Arrays ';'"
-    p[0] = p[2]
+    "ArrayDecls : ArrayDecls ARRAY Arrays ';'"
+    p[0] = p[1] + p[3]
 
 def p_ArrayDecls_Empty(p):
     "ArrayDecls : "
