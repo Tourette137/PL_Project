@@ -11,7 +11,6 @@ from ios import *
 
 import sys
 import os
-import re
 
 # Production rules
 def p_Program(p):
@@ -23,7 +22,7 @@ def p_Program(p):
 
 def p_error(p):
     print(f'Syntax Error: {p}')
-    #parser.success = False
+    parser.success = False
 
 
 # Build parser
@@ -58,6 +57,7 @@ except SyntaxError as e1:
     print("Syntax Error. [Verifique possíveis erros na escrita do código]\n")
 except TypeError as e2:
     print("Syntax Error. [Verifique possíveis erros na escrita do código]\n")
+f.close
 
 if not parser.success:
     os.remove(file_name)
