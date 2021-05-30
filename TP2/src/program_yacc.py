@@ -56,6 +56,8 @@ if not parser.success:
     os.remove(file_name)
 
 
+
+
 #print(parser.identifier_table)
 #print(parser.var_offset)
 #print(parser.if_count)

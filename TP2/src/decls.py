@@ -6,27 +6,27 @@ from ios import *
 
 import re
 
-def p_Decls1(p):
+def p_Decls(p):
     "Decls : IntDecls ArrayDecls"
     p[0] = p[1] + p[2]
 
-def p_IntDecls1(p):
+def p_IntDecls(p):
     "IntDecls : INT IntVars ';'"
     p[0] = p[2]
 
-def p_IntDecls2(p):
+def p_IntDecls_Empty(p):
     "IntDecls : "
     p[0] = ""
 
-def p_IntVars1(p):
+def p_IntVars(p):
     "IntVars : IntVars ',' IntVar"
     p[0] = p[1] + p[3]
 
-def p_IntVars2(p):
+def p_IntVars_Single(p):
     "IntVars : IntVar"
     p[0] = p[1]
 
-def p_IntVar1(p):
+def p_IntVar_Var(p):
     "IntVar : VAR"
     
     name = p[1]
@@ -39,7 +39,7 @@ def p_IntVar1(p):
         p.parser.var_offset += 1
         p[0] = "\tpushi 0\n"
 
-def p_IntVar2(p):
+def p_IntVar_VarNum(p):
     "IntVar : VAR '=' NUM"
     
     name = p[1]
@@ -52,27 +52,27 @@ def p_IntVar2(p):
         p.parser.var_offset += 1
         p[0] = "\tpushi " + p[3] + "\n"
 
-def p_ArrayDecls1(p):
+def p_ArrayDecls(p):
     "ArrayDecls : ARRAY Arrays ';'"
     p[0] = p[2]
 
-def p_ArrayDecls2(p):
+def p_ArrayDecls_Empty(p):
     "ArrayDecls : "
     p[0] = ""
 
-def p_Arrays1(p):
+def p_Arrays_ArraysMatrix(p):
     "Arrays : Arrays ',' Array"
     p[0] = p[1] + p[3]
 
-def p_Arrays2(p):
+def p_Arrays_Array(p):
     "Arrays : Array"
     p[0] = p[1]
 
-def p_Arrays3(p):
+def p_Arrays_ArraysMatrix(p):
     "Arrays : Arrays ',' Matrix"
     p[0] = p[1] + p[3]
 
-def p_Arrays4(p):
+def p_Arrays_Matrix(p):
     "Arrays : Matrix"
     p[0] = p[1]
 

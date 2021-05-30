@@ -6,15 +6,15 @@ from ios import *
 
 import re
 
-def p_Atribs1(p):
+def p_Atribs(p):
     "Atribs : Atribs ',' Atrib"
     p[0] = p[1] + p[3]
 
-def p_Atribs2(p):
+def p_Atribs_Atrib(p):
     "Atribs : Atrib"
     p[0] = p[1]
 
-def p_Atribs3(p):
+def p_Atribs_Empty(p):
     "Atribs : "
     p[0] = ""
 

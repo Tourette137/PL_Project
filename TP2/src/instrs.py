@@ -12,11 +12,11 @@ def p_EndInstrs(p):
     "EndInstrs : END_INSTRS"
     p[0] = "stop\n"
 
-def p_Instrs1(p):
+def p_Instrs(p):
     "Instrs : Instrs Instr"
     p[0] = p[1] + p[2]
 
-def p_Instrs2(p):
+def p_Instrs_Empty(p):
     "Instrs : "
     p[0] = ""
 
